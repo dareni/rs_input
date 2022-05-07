@@ -62,10 +62,11 @@ impl<'a> Keyboard {
 }
 
 pub fn get_keyboards() -> Vec<Keyboard> {
-    let entries: Vec<Keyboard> = fs::read_dir(&INPUT_DEVICES)
+    let mut entries: Vec<Keyboard> = fs::read_dir(&INPUT_DEVICES)
         .expect("Incorrect input device location??")
         .filter_map(|dir_entry| get_keyboard_device(dir_entry))
         .collect();
+    entries.sort_by(|a, b| a.path.cmp(&b.path));
     return entries;
 }
 
@@ -238,6 +239,14 @@ pub fn bits_set(val: u64, mask: u64) -> bool {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+  fn test_keyboard_sort() {
+    let mut entries = vec!["/sys/class/input/event5", "/sys/class/input/event0","/sys/class/input/event3"];
+    entries.sort_by(|a, b| a.cmp(&b));
+    println!("{:?}", entries);
+  }
+
+
     #[test]
     fn test_bits_set() {
         use crate::bits_set;
